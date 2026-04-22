@@ -1,81 +1,628 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="scroll-smooth">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal Resmi LKSA Nurul Muttaqin</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
-        .accordion-content { display: none; }
-    </style>
-</head>
-<body class="bg-slate-50 font-sans text-slate-800">
-
-    <header class="bg-blue-900 text-white py-16 px-4 text-center shadow-2xl">
-        <div class="max-w-4xl mx-auto">
-            <i class="fas fa-university text-5xl mb-4 text-yellow-400"></i>
-            <h1 class="text-3xl md:text-5xl font-bold mb-2">LKSA Nurul Muttaqin</h1>
-            <p class="text-blue-200 text-lg">Pusat Data & Administrasi Terintegrasi</p>
-        </div>
-    </header>
-
-    <main class="max-w-4xl mx-auto -mt-10 px-4 pb-20">
-        
-        <div id="role-selector" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-            <div class="glass p-8 rounded-2xl shadow-lg border border-blue-100 text-center hover:shadow-2xl transition">
-                <i class="fas fa-building text-4xl text-blue-800 mb-4"></i>
-                <h2 class="text-xl font-bold mb-4">Dinas Sosial</h2>
-                <button onclick="auth('dinas', 'DINAS123')" class="w-full bg-blue-800 text-white py-3 rounded-lg font-semibold hover:bg-blue-900 transition">Akses Dinas</button>
-            </div>
-            <div class="glass p-8 rounded-2xl shadow-lg border border-green-100 text-center hover:shadow-2xl transition">
-                <i class="fas fa-users text-4xl text-green-700 mb-4"></i>
-                <h2 class="text-xl font-bold mb-4">Pengurus LKSA</h2>
-                <button onclick="auth('pengurus', 'PENGURUS123')" class="w-full bg-green-700 text-white py-3 rounded-lg font-semibold hover:bg-green-800 transition">Akses Pengurus</button>
-            </div>
-        </div>
-
-        <div id="doc-section" class="hidden space-y-4">
-            <h2 id="title-role" class="text-2xl font-bold text-center text-blue-900 mb-6"></h2>
-            <div id="list-container" class="space-y-4"></div>
-            
-            <div class="mt-12 bg-white p-8 rounded-2xl shadow-md text-center border border-dashed border-red-300">
-                <h3 class="font-bold text-lg mb-2">Unduh Semua Data</h3>
-                <a href="LINK_ZIP_ANDA" class="inline-block bg-red-600 text-white px-8 py-3 rounded-full font-bold hover:bg-red-700 transition">
-                    <i class="fas fa-file-archive mr-2"></i> Download Paket .ZIP
-                </a>
-            </div>
-        </div>
-    </main>
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 
     <script>
-const allDocs = [
-        {name: "1. Akta Notaris", url: "https://drive.google.com/file/d/1HJ3GczhRTW8_mFNYCLwHx4vgGHinhpkU/preview", roles: ['dinas']},
-        {name: "2. Kemenkumham", url: "https://drive.google.com/file/d/19cJvZ1CYzqTE584CF0EjqjR6H-Z75qjc/preview", roles: ['dinas']},
-        {name: "3. Ijin Operasional", url: "https://drive.google.com/file/d/1h-GvbYqv3DPgvx1oQqjTzRBIiqE75IRF/preview", roles: ['dinas', 'pengurus']},
-        {name: "4. Foto Papan Struktur/Visi Misi", url: "https://drive.google.com/file/d/1Mjd0flN1lYSMLctny0Tx067M9T0NvvCR/preview", roles: ['dinas', 'pengurus']},
-        {name: "5. Foto Plang Lembaga", url: "https://drive.google.com/file/d/1IvidL0--XX00xgzW-iFfyX8La4UuvsNY/preview", roles: ['dinas', 'pengurus']},
-        {name: "6. Foto Bangunan Lembaga/Asrama", url: "https://drive.google.com/file/d/1w7UfeRjB64NJsq3rYj-8k3EcaCEfaQI5/preview", roles: ['dinas', 'pengurus']},
-        {name: "7. Sertifikat Akreditasi", url: "https://drive.google.com/file/d/1WyPk1XC1T3Mk16M63S9ZDa8C6TmRBPrH/preview", roles: ['dinas']},
-        {name: "8. Foto KTP Ketua Lembaga", url: "https://drive.google.com/file/d/1no65nHFDCFvzrT1co9Pjyp8-2l56Qr_z/preview", roles: ['dinas']},
-        {name: "9. Data SDM/Pengurus", url: "https://drive.google.com/file/d/1eOImkdxa07bMw4tNPS84fO1ofNVdRjsc/preview", roles: ['dinas', 'pengurus']},
-        {name: "10. Foto Kegiatan Binaan", url: "https://drive.google.com/file/d/1YIl_SyXUWp2QRut1MMwyUJ6ot7x-HH2C/preview", roles: ['dinas', 'pengurus']},
-        {name: "11. Domisili Lembaga", url: "https://drive.google.com/file/d/151O57jZAm7QK14D9TIYuoUTYRs5J2wYD/preview", roles: ['dinas', 'pengurus']},
-        {name: "12. BNBA/Rekap Data Binaan", url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRjAu0LcpainhlOfHV8x_ttBoEAE_jFL7Rfv2yOBgQomTYfSi701-V1o4QyEYSwag/pubhtml?gid=1281343130&single=true&widget=true&headers=false", roles: ['dinas']}
-    ];
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1e3a8a', // blue-900
+                        secondary: '#15803d', // green-700
+                        accent: '#fbbf24', // yellow-400
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .glass-dark {
+            background: rgba(30, 58, 138, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .accordion-content {
+            display: none;
+        }
+
+        /* Swiper custom styles */
+        .swiper-slide {
+            background-position: center;
+            background-size: cover;
+        }
+
+        .hero-overlay {
+            background: linear-gradient(to top, rgba(15, 23, 42, 0.9) 0%, rgba(15, 23, 42, 0.4) 100%);
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-800 antialiased">
+
+    <!-- Navbar -->
+    <nav class="fixed w-full z-50 glass-dark text-white transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <div class="flex-shrink-0 flex items-center gap-3">
+                    <i class="fas fa-university text-3xl text-accent"></i>
+                    <span class="font-bold text-xl md:text-2xl tracking-tight">LKSA Nurul Muttaqin</span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-6">
+                        <a href="#home"
+                            class="hover:text-accent transition px-3 py-2 rounded-md text-sm font-medium">Beranda</a>
+                        <a href="#profil"
+                            class="hover:text-accent transition px-3 py-2 rounded-md text-sm font-medium">Profil</a>
+                        <a href="#berita"
+                            class="hover:text-accent transition px-3 py-2 rounded-md text-sm font-medium">Berita</a>
+                        <a href="#pusat-data"
+                            class="hover:text-accent transition px-3 py-2 rounded-md text-sm font-medium">Pusat Data</a>
+                        <a href="#galeri"
+                            class="hover:text-accent transition px-3 py-2 rounded-md text-sm font-medium">Galeri</a>
+                    </div>
+                </div>
+                <div class="-mr-2 flex md:hidden">
+                    <button type="button" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')"
+                        class="inline-flex items-center justify-center p-2 rounded-md text-white hover:text-accent focus:outline-none">
+                        <i class="fas fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div class="hidden md:hidden glass-dark absolute w-full border-t border-blue-800" id="mobile-menu">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 text-center">
+                <a href="#home"
+                    class="block hover:text-accent transition px-3 py-2 rounded-md text-base font-medium">Beranda</a>
+                <a href="#profil"
+                    class="block hover:text-accent transition px-3 py-2 rounded-md text-base font-medium">Profil</a>
+                <a href="#berita"
+                    class="block hover:text-accent transition px-3 py-2 rounded-md text-base font-medium">Berita</a>
+                <a href="#pusat-data"
+                    class="block hover:text-accent transition px-3 py-2 rounded-md text-base font-medium">Pusat Data</a>
+                <a href="#galeri"
+                    class="block hover:text-accent transition px-3 py-2 rounded-md text-base font-medium">Galeri</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="relative h-screen w-full">
+        <div class="swiper mySwiper h-full w-full">
+            <div class="swiper-wrapper">
+                <!-- Slide 1 -->
+                <div class="swiper-slide relative">
+                    <img src="images/1.jpg" alt="Kegiatan" class="w-full h-full object-cover">
+                    <div
+                        class="absolute inset-0 hero-overlay flex flex-col items-center justify-center text-center px-4">
+                        <h1
+                            class="text-4xl md:text-6xl font-bold text-white mb-4 transform translate-y-4 opacity-0 animate-fade-in-up">
+                            Membangun Generasi Rabbani</h1>
+                        <p
+                            class="text-lg md:text-2xl text-blue-100 max-w-2xl mb-8 transform translate-y-4 opacity-0 animate-fade-in-up delay-100">
+                            Menyediakan pendidikan, perlindungan, dan kasih sayang untuk anak-anak bangsa.</p>
+                        <a href="#profil"
+                            class="bg-accent text-primary px-8 py-3 rounded-full font-bold hover:bg-yellow-300 transition transform translate-y-4 opacity-0 animate-fade-in-up delay-200">Kenali
+                            Kami Lebih Dekat</a>
+                    </div>
+                </div>
+                <!-- Slide 2 -->
+                <div class="swiper-slide relative">
+                    <img src="images/2.jpg" alt="Pendidikan" class="w-full h-full object-cover">
+                    <div
+                        class="absolute inset-0 hero-overlay flex flex-col items-center justify-center text-center px-4">
+                        <h1 class="text-4xl md:text-6xl font-bold text-white mb-4">Pendidikan Berbasis Akhlak</h1>
+                        <p class="text-lg md:text-2xl text-blue-100 max-w-2xl mb-8">Mengintegrasikan ilmu umum dan agama
+                            dalam kehidupan sehari-hari.</p>
+                        <a href="#pusat-data"
+                            class="bg-white text-primary px-8 py-3 rounded-full font-bold hover:bg-slate-100 transition">Akses
+                            Pusat Data</a>
+                    </div>
+                </div>
+            </div>
+            <div class="swiper-pagination"></div>
+            <div class="swiper-button-next text-white"></div>
+            <div class="swiper-button-prev text-white"></div>
+        </div>
+    </section>
+
+    <!-- Profil & Visi Misi Section -->
+    <section id="profil" class="py-20 bg-slate-50 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-primary mb-4">Profil Lembaga</h2>
+                <div class="w-24 h-1 bg-accent mx-auto rounded"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center mb-20">
+                <div class="rounded-2xl overflow-hidden shadow-2xl relative group">
+                    <img src="images/3.jpg" alt="Gedung LKSA"
+                        class="w-full h-auto transform group-hover:scale-105 transition duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                    <div class="absolute bottom-4 left-4 right-4 text-white">
+                        <h3 class="text-xl font-bold">Asrama LKSA Nurul Muttaqin</h3>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-bold text-slate-800 mb-4">Lembaga Kesejahteraan Sosial Anak</h3>
+                    <p class="text-slate-600 mb-6 leading-relaxed">
+                        LKSA Nurul Muttaqin didirikan dengan niat tulus untuk menjadi rumah yang aman dan nyaman bagi
+                        anak-anak yatim piatu dan dhuafa. Kami berkomitmen memberikan pengasuhan yang layak, pendidikan
+                        yang berkualitas, serta bekal keterampilan hidup untuk masa depan mereka.
+                    </p>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex items-center gap-3">
+                            <div class="bg-blue-100 p-3 rounded-lg text-primary"><i class="fas fa-child text-xl"></i>
+                            </div>
+                            <div>
+                                <div class="font-bold text-xl">150+</div>
+                                <div class="text-sm text-slate-500">Anak Asuh</div>
+                            </div>
+                        </div>
+                        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex items-center gap-3">
+                            <div class="bg-green-100 p-3 rounded-lg text-secondary"><i
+                                    class="fas fa-chalkboard-teacher text-xl"></i></div>
+                            <div>
+                                <div class="font-bold text-xl">30+</div>
+                                <div class="text-sm text-slate-500">Pengasuh & Guru</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Visi -->
+                <div class="glass p-8 rounded-3xl relative overflow-hidden shadow-lg border-t-4 border-primary">
+                    <div class="absolute -right-6 -top-6 text-blue-100 opacity-50">
+                        <i class="fas fa-eye text-9xl"></i>
+                    </div>
+                    <div class="relative z-10">
+                        <div class="inline-block p-3 bg-primary text-white rounded-xl mb-4">
+                            <i class="fas fa-eye text-2xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-primary mb-4">Visi Kami</h3>
+                        <p class="text-slate-700 leading-relaxed font-medium">
+                            "Menjadi lembaga pelayanan sosial yang unggul dalam mewujudkan generasi mandiri, berakhlak
+                            mulia, dan berguna bagi agama, nusa, dan bangsa."
+                        </p>
+                    </div>
+                </div>
+                <!-- Misi -->
+                <div class="glass p-8 rounded-3xl relative overflow-hidden shadow-lg border-t-4 border-secondary">
+                    <div class="absolute -right-6 -top-6 text-green-100 opacity-50">
+                        <i class="fas fa-bullseye text-9xl"></i>
+                    </div>
+                    <div class="relative z-10">
+                        <div class="inline-block p-3 bg-secondary text-white rounded-xl mb-4">
+                            <i class="fas fa-bullseye text-2xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-secondary mb-4">Misi Kami</h3>
+                        <ul class="text-slate-700 space-y-3 font-medium">
+                            <li class="flex items-start gap-2"><i class="fas fa-check-circle text-green-500 mt-1"></i>
+                                Memberikan pelayanan pengasuhan yang komprehensif.</li>
+                            <li class="flex items-start gap-2"><i class="fas fa-check-circle text-green-500 mt-1"></i>
+                                Menyelenggarakan pendidikan formal dan non-formal.</li>
+                            <li class="flex items-start gap-2"><i class="fas fa-check-circle text-green-500 mt-1"></i>
+                                Membekali anak dengan keterampilan kemandirian.</li>
+                            <li class="flex items-start gap-2"><i class="fas fa-check-circle text-green-500 mt-1"></i>
+                                Menanamkan nilai-nilai keagamaan dan budi pekerti.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Berita / Artikel Section -->
+    <section id="berita" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-primary mb-4">Kabar & Kegiatan Terkini</h2>
+                <div class="w-24 h-1 bg-accent mx-auto rounded"></div>
+                <p class="mt-4 text-slate-500">Update terbaru kegiatan santri dan program lembaga</p>
+            </div>
+
+            <div class="mb-8 flex items-center justify-between border-b border-slate-200 pb-4">
+                <h3 class="text-2xl font-bold text-slate-800"><i class="fas fa-newspaper text-accent mr-2"></i>Berita LKSA</h3>
+                <a href="https://lksa.nurulmuttaqin.my.id" target="_blank" class="text-primary font-semibold hover:underline">Lihat Semua <i class="fas fa-arrow-right text-sm"></i></a>
+            </div>
+            <div id="feed-lksa" class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+                <!-- Skeleton Loader -->
+                <div class="animate-pulse flex flex-col bg-slate-50 rounded-2xl overflow-hidden shadow-md border border-slate-100"><div class="h-48 bg-slate-200"></div><div class="p-6 flex-1 space-y-4"><div class="h-4 bg-slate-200 rounded w-1/4"></div><div class="h-6 bg-slate-200 rounded w-full"></div><div class="h-4 bg-slate-200 rounded w-full"></div><div class="h-4 bg-slate-200 rounded w-2/3"></div></div></div>
+                <div class="animate-pulse flex flex-col bg-slate-50 rounded-2xl overflow-hidden shadow-md border border-slate-100"><div class="h-48 bg-slate-200"></div><div class="p-6 flex-1 space-y-4"><div class="h-4 bg-slate-200 rounded w-1/4"></div><div class="h-6 bg-slate-200 rounded w-full"></div><div class="h-4 bg-slate-200 rounded w-full"></div><div class="h-4 bg-slate-200 rounded w-2/3"></div></div></div>
+                <div class="animate-pulse flex flex-col bg-slate-50 rounded-2xl overflow-hidden shadow-md border border-slate-100"><div class="h-48 bg-slate-200"></div><div class="p-6 flex-1 space-y-4"><div class="h-4 bg-slate-200 rounded w-1/4"></div><div class="h-6 bg-slate-200 rounded w-full"></div><div class="h-4 bg-slate-200 rounded w-full"></div><div class="h-4 bg-slate-200 rounded w-2/3"></div></div></div>
+            </div>
+
+            <div class="mb-8 flex items-center justify-between border-b border-slate-200 pb-4">
+                <h3 class="text-2xl font-bold text-slate-800"><i class="fas fa-building text-accent mr-2"></i>Kabar Yayasan</h3>
+                <a href="https://media.nurulmuttaqin.my.id" target="_blank" class="text-primary font-semibold hover:underline">Lihat Semua <i class="fas fa-arrow-right text-sm"></i></a>
+            </div>
+            <div id="feed-media" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Skeleton Loader -->
+                <div class="animate-pulse flex flex-col bg-slate-50 rounded-2xl overflow-hidden shadow-md border border-slate-100"><div class="h-48 bg-slate-200"></div><div class="p-6 flex-1 space-y-4"><div class="h-4 bg-slate-200 rounded w-1/4"></div><div class="h-6 bg-slate-200 rounded w-full"></div><div class="h-4 bg-slate-200 rounded w-full"></div><div class="h-4 bg-slate-200 rounded w-2/3"></div></div></div>
+                <div class="animate-pulse flex flex-col bg-slate-50 rounded-2xl overflow-hidden shadow-md border border-slate-100"><div class="h-48 bg-slate-200"></div><div class="p-6 flex-1 space-y-4"><div class="h-4 bg-slate-200 rounded w-1/4"></div><div class="h-6 bg-slate-200 rounded w-full"></div><div class="h-4 bg-slate-200 rounded w-full"></div><div class="h-4 bg-slate-200 rounded w-2/3"></div></div></div>
+                <div class="animate-pulse flex flex-col bg-slate-50 rounded-2xl overflow-hidden shadow-md border border-slate-100"><div class="h-48 bg-slate-200"></div><div class="p-6 flex-1 space-y-4"><div class="h-4 bg-slate-200 rounded w-1/4"></div><div class="h-6 bg-slate-200 rounded w-full"></div><div class="h-4 bg-slate-200 rounded w-full"></div><div class="h-4 bg-slate-200 rounded w-2/3"></div></div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pusat Data Section (Integrasi Fitur Lama) -->
+    <section id="pusat-data" class="py-20 bg-blue-900 text-white relative">
+        <!-- Pattern Overlay -->
+        <div class="absolute inset-0 opacity-10"
+            style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');">
+        </div>
+
+        <div class="max-w-4xl mx-auto px-4 relative z-10">
+            <div class="text-center mb-12">
+                <i class="fas fa-database text-5xl mb-4 text-accent"></i>
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">Pusat Data & Administrasi Terintegrasi</h2>
+                <p class="text-blue-200 text-lg">Akses eksklusif untuk Dinas Sosial dan Pengurus LKSA</p>
+            </div>
+
+            <!-- Authenticaton Selector -->
+            <div id="role-selector" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+                <div
+                    class="glass-dark p-8 rounded-2xl shadow-lg text-center hover:shadow-2xl transition border-blue-400">
+                    <i class="fas fa-building text-5xl text-blue-300 mb-4"></i>
+                    <h2 class="text-2xl font-bold mb-6 text-white">Dinas Sosial</h2>
+                    <button onclick="auth('dinas', 'DINAS123')"
+                        class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-500 transition shadow-lg">Akses
+                        Dinas</button>
+                </div>
+                <div
+                    class="glass-dark p-8 rounded-2xl shadow-lg text-center hover:shadow-2xl transition border-green-400">
+                    <i class="fas fa-users text-5xl text-green-300 mb-4"></i>
+                    <h2 class="text-2xl font-bold mb-6 text-white">Pengurus LKSA</h2>
+                    <button onclick="auth('pengurus', 'PENGURUS123')"
+                        class="w-full bg-green-600 text-white py-3 rounded-lg font-bold hover:bg-green-500 transition shadow-lg">Akses
+                        Pengurus</button>
+                </div>
+            </div>
+
+            <!-- Document Viewer -->
+            <div id="doc-section" class="hidden space-y-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 id="title-role" class="text-2xl font-bold text-accent"></h2>
+                    <button onclick="resetAuth()"
+                        class="bg-red-500 text-white px-4 py-2 rounded font-semibold hover:bg-red-600 text-sm"><i
+                            class="fas fa-sign-out-alt mr-1"></i> Keluar</button>
+                </div>
+
+                <div id="list-container" class="space-y-4 text-slate-800"></div>
+
+                <div
+                    class="mt-12 bg-white/10 backdrop-blur-sm p-8 rounded-2xl shadow-md text-center border border-dashed border-red-300 text-white">
+                    <h3 class="font-bold text-lg mb-2">Unduh Semua Data</h3>
+                    <p class="text-sm text-blue-200 mb-4">Paket arsip (.zip) seluruh dokumen legalitas dan data binaan.
+                    </p>
+                    <a href="LINK_ZIP_ANDA"
+                        class="inline-block bg-red-600 text-white px-8 py-3 rounded-full font-bold hover:bg-red-700 transition shadow-lg">
+                        <i class="fas fa-file-archive mr-2"></i> Download Paket .ZIP
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Galeri & Video Section -->
+    <section id="galeri" class="py-20 bg-slate-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-primary mb-4">Galeri & Video Kegiatan</h2>
+                <div class="w-24 h-1 bg-accent mx-auto rounded"></div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- YouTube Embed -->
+                <div class="lg:col-span-2">
+                    <div class="bg-white p-2 rounded-2xl shadow-lg border border-slate-200 h-full">
+                        <div class="relative w-full h-full min-h-[300px] overflow-hidden rounded-xl">
+                            <iframe class="absolute top-0 left-0 w-full h-full"
+                                src="https://www.youtube.com/embed/NxjsC54xDnc"
+                                title="YouTube video player" frameborder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowfullscreen></iframe>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Photo Gallery Grid -->
+                <div class="grid grid-cols-2 gap-4">
+                    <img src="images/4.jpg" alt="Galeri 1"
+                        class="w-full h-full object-cover rounded-2xl shadow-sm hover:shadow-md transition aspect-square">
+                    <img src="images/5.jpg" alt="Galeri 2"
+                        class="w-full h-full object-cover rounded-2xl shadow-sm hover:shadow-md transition aspect-square">
+                    <img src="images/1.jpg" alt="Galeri 3"
+                        class="w-full h-full object-cover rounded-2xl shadow-sm hover:shadow-md transition aspect-square">
+                    <img src="images/2.jpg" alt="Galeri 4"
+                        class="w-full h-full object-cover rounded-2xl shadow-sm hover:shadow-md transition aspect-square">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-white pt-16 pb-8 border-t-4 border-accent">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
+                <div>
+                    <div class="flex items-center gap-3 mb-6">
+                        <i class="fas fa-university text-3xl text-accent"></i>
+                        <span class="font-bold text-2xl tracking-tight">LKSA Nurul Muttaqin</span>
+                    </div>
+                    <p class="text-slate-400 mb-6 leading-relaxed">
+                        Mewujudkan generasi mandiri, berakhlak mulia, dan berguna bagi agama, nusa, dan bangsa melalui
+                        pengasuhan dan pendidikan terpadu.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#"
+                            class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-primary hover:text-white transition"><i
+                                class="fab fa-facebook-f"></i></a>
+                        <a href="#"
+                            class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-primary hover:text-white transition"><i
+                                class="fab fa-instagram"></i></a>
+                        <a href="#"
+                            class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-red-600 hover:text-white transition"><i
+                                class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-6 text-white">Tautan Cepat</h3>
+                    <ul class="space-y-3">
+                        <li><a href="#home"
+                                class="text-slate-400 hover:text-accent transition flex items-center gap-2"><i
+                                    class="fas fa-chevron-right text-xs"></i> Beranda</a></li>
+                        <li><a href="#profil"
+                                class="text-slate-400 hover:text-accent transition flex items-center gap-2"><i
+                                    class="fas fa-chevron-right text-xs"></i> Profil & Visi Misi</a></li>
+                        <li><a href="#berita"
+                                class="text-slate-400 hover:text-accent transition flex items-center gap-2"><i
+                                    class="fas fa-chevron-right text-xs"></i> Kabar Terkini</a></li>
+                        <li><a href="#pusat-data"
+                                class="text-slate-400 hover:text-accent transition flex items-center gap-2"><i
+                                    class="fas fa-chevron-right text-xs"></i> Pusat Data</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-6 text-white">Kontak & Alamat</h3>
+                    <ul class="space-y-4">
+                        <li class="flex items-start gap-3 text-slate-400">
+                            <i class="fas fa-map-marker-alt mt-1 text-accent"></i>
+                            <span>Jl. Pendidikan No. 123, Desa Sejahtera, Kec. Harapan, Kab. Lombok Timur, NTB
+                                83652</span>
+                        </li>
+                        <li class="flex items-center gap-3 text-slate-400">
+                            <i class="fas fa-phone-alt text-accent"></i>
+                            <span>+62 812 3456 7890</span>
+                        </li>
+                        <li class="flex items-center gap-3 text-slate-400">
+                            <i class="fas fa-envelope text-accent"></i>
+                            <span>info@nurulmuttaqin.my.id</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-slate-800 pt-8 text-center text-slate-500 text-sm">
+                <p>&copy; 2026 LKSA Nurul Muttaqin. Hak Cipta Dilindungi.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <!-- Swiper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+    <script>
+        // Navbar Scroll Effect
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                nav.classList.add('shadow-lg');
+                nav.style.background = 'rgba(15, 23, 42, 0.95)'; // slate-900 with opacity
+            } else {
+                nav.classList.remove('shadow-lg');
+                nav.style.background = 'rgba(30, 58, 138, 0.85)'; // glass-dark default
+            }
+        });
+
+        // Initialize Swiper
+        var swiper = new Swiper(".mySwiper", {
+            spaceBetween: 0,
+            centeredSlides: true,
+            autoplay: {
+                delay: 5000,
+                disableOnInteraction: false,
+            },
+            pagination: {
+                el: ".swiper-pagination",
+                clickable: true,
+            },
+            navigation: {
+                nextEl: ".swiper-button-next",
+                prevEl: ".swiper-button-prev",
+            },
+            effect: "fade",
+        });
+
+        // Add animations to hero text based on CSS classes defined (custom simplistic implementation)
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeInUp {
+                from { opacity: 0; transform: translateY(20px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            .animate-fade-in-up { animation: fadeInUp 0.8s ease-out forwards; }
+            .delay-100 { animation-delay: 0.2s; }
+            .delay-200 { animation-delay: 0.4s; }
+        `;
+        document.head.appendChild(style);
+
+        // Fetch Blogger Feed menggunakan JSONP (Solusi Anti-CORS)
+        document.addEventListener('DOMContentLoaded', () => {
+            window.bloggerCallbacks = window.bloggerCallbacks || {};
+            let callbackCounter = 0;
+
+            function fetchBloggerFeed(url, containerId) {
+                const callbackName = 'bloggerFeedCallback_' + (++callbackCounter);
+                
+                window.bloggerCallbacks[callbackName] = function(data) {
+                    const container = document.getElementById(containerId);
+                    if (!data.feed.entry) {
+                        container.innerHTML = '<p class="text-center col-span-3 text-slate-500">Belum ada artikel.</p>';
+                        return;
+                    }
+
+                    let html = '';
+                    data.feed.entry.forEach(post => {
+                        const title = post.title.$t;
+                        // Temukan link postingan
+                        let link = '#';
+                        for (let i = 0; i < post.link.length; i++) {
+                            if (post.link[i].rel === 'alternate') {
+                                link = post.link[i].href;
+                                break;
+                            }
+                        }
+
+                        // Ekstrak thumbnail
+                        let thumbnail = 'https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80';
+                        
+                        // 1. Prioritaskan mengambil gambar dari konten (karena umumnya bukan thumbnail kecil)
+                        if (post.content && post.content.$t) {
+                            const match = post.content.$t.match(/<img[^>]+src="([^">]+)"/);
+                            if (match) thumbnail = match[1];
+                        }
+                        
+                        // 2. Jika tidak ada gambar di konten, ambil dari media$thumbnail
+                        if (thumbnail.includes('images.unsplash.com') && post.media$thumbnail) {
+                            thumbnail = post.media$thumbnail.url;
+                        }
+
+                        // 3. Perbaiki resolusi: Paksa gambar Blogger menggunakan resolusi tinggi (s800) agar tidak blur
+                        if (thumbnail.includes('blogger.googleusercontent.com') || thumbnail.includes('bp.blogspot.com')) {
+                            thumbnail = thumbnail.replace(/\/(s\d+|w\d+|h\d+)(-[a-zA-Z0-9-]+)*\//g, '/w800-h600-c/');
+                        }
+
+                        // Tanggal Terbit
+                        const date = new Date(post.published.$t).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
+
+                        html += `
+                            <a href="${link}" target="_blank" class="flex flex-col bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition transform hover:-translate-y-1 border border-slate-100 group">
+                                <div class="h-48 overflow-hidden relative">
+                                    <img src="${thumbnail}" alt="${title}" class="w-full h-full object-cover transform group-hover:scale-105 transition duration-500">
+                                </div>
+                                <div class="p-6 flex-1 flex flex-col">
+                                    <span class="text-xs font-semibold text-accent mb-2"><i class="far fa-calendar-alt mr-1"></i> ${date}</span>
+                                    <h3 class="font-bold text-lg text-slate-800 mb-3 leading-tight line-clamp-2">${title}</h3>
+                                    <div class="mt-auto border-t border-slate-100 pt-4 flex items-center text-primary text-sm font-semibold w-full">
+                                        Baca Selengkapnya <i class="fas fa-arrow-right ml-auto transition transform group-hover:translate-x-1"></i>
+                                    </div>
+                                </div>
+                            </a>
+                        `;
+                    });
+
+                    container.innerHTML = html;
+                    
+                    // Bersihkan tag script
+                    const script = document.getElementById('script_' + callbackName);
+                    if (script) script.remove();
+                };
+
+                // Ubah alt=json menjadi alt=json-in-script untuk JSONP
+                const scriptUrl = url.replace('alt=json', 'alt=json-in-script') + '&callback=window.bloggerCallbacks.' + callbackName;
+                const scriptElement = document.createElement('script');
+                scriptElement.id = 'script_' + callbackName;
+                scriptElement.src = scriptUrl;
+                
+                // Tangani error memuat script (misal internet mati)
+                scriptElement.onerror = function() {
+                    document.getElementById(containerId).innerHTML = '<p class="text-center col-span-3 text-red-500">Gagal memuat artikel. Periksa koneksi internet Anda.</p>';
+                };
+                
+                document.body.appendChild(scriptElement);
+            }
+
+            // Panggil feed dari kedua domain
+            fetchBloggerFeed('https://lksa.nurulmuttaqin.my.id/feeds/posts/default?alt=json&max-results=3', 'feed-lksa');
+            fetchBloggerFeed('https://media.nurulmuttaqin.my.id/feeds/posts/default?alt=json&max-results=3', 'feed-media');
+        });
+
+        // Data Pusat Data (Fitur Lama)
+        const allDocs = [
+            { name: "1. Akta Notaris", url: "https://drive.google.com/file/d/1HJ3GczhRTW8_mFNYCLwHx4vgGHinhpkU/preview", roles: ['dinas'] },
+            { name: "2. Kemenkumham", url: "https://drive.google.com/file/d/19cJvZ1CYzqTE584CF0EjqjR6H-Z75qjc/preview", roles: ['dinas'] },
+            { name: "3. Ijin Operasional", url: "https://drive.google.com/file/d/1h-GvbYqv3DPgvx1oQqjTzRBIiqE75IRF/preview", roles: ['dinas', 'pengurus'] },
+            { name: "4. Foto Papan Struktur/Visi Misi", url: "https://drive.google.com/file/d/1Mjd0flN1lYSMLctny0Tx067M9T0NvvCR/preview", roles: ['dinas', 'pengurus'] },
+            { name: "5. Foto Plang Lembaga", url: "https://drive.google.com/file/d/1IvidL0--XX00xgzW-iFfyX8La4UuvsNY/preview", roles: ['dinas', 'pengurus'] },
+            { name: "6. Foto Bangunan Lembaga/Asrama", url: "https://drive.google.com/file/d/1w7UfeRjB64NJsq3rYj-8k3EcaCEfaQI5/preview", roles: ['dinas', 'pengurus'] },
+            { name: "7. Sertifikat Akreditasi", url: "https://drive.google.com/file/d/1WyPk1XC1T3Mk16M63S9ZDa8C6TmRBPrH/preview", roles: ['dinas'] },
+            { name: "8. Foto KTP Ketua Lembaga", url: "https://drive.google.com/file/d/1no65nHFDCFvzrT1co9Pjyp8-2l56Qr_z/preview", roles: ['dinas'] },
+            { name: "9. Data SDM/Pengurus", url: "https://drive.google.com/file/d/1eOImkdxa07bMw4tNPS84fO1ofNVdRjsc/preview", roles: ['dinas', 'pengurus'] },
+            { name: "10. Foto Kegiatan Binaan", url: "https://drive.google.com/file/d/1YIl_SyXUWp2QRut1MMwyUJ6ot7x-HH2C/preview", roles: ['dinas', 'pengurus'] },
+            { name: "11. Domisili Lembaga", url: "https://drive.google.com/file/d/151O57jZAm7QK14D9TIYuoUTYRs5J2wYD/preview", roles: ['dinas', 'pengurus'] },
+            { name: "12. BNBA/Rekap Data Binaan", url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRjAu0LcpainhlOfHV8x_ttBoEAE_jFL7Rfv2yOBgQomTYfSi701-V1o4QyEYSwag/pubhtml?gid=1281343130&single=true&widget=true&headers=false", roles: ['dinas'] }
+        ];
 
         function auth(role, pass) {
-            Swal.fire({ title: 'Otentikasi', input: 'password', confirmButtonText: 'Masuk', showCancelButton: true })
-            .then((res) => {
-                if (res.value === pass) {
-                    document.getElementById('role-selector').classList.add('hidden');
-                    document.getElementById('doc-section').classList.remove('hidden');
-                    document.getElementById('title-role').innerText = "Dashboard: " + role.toUpperCase();
-                    renderDocs(role);
-                } else if (res.value) { Swal.fire('Error', 'Password Salah', 'error'); }
-            });
+            Swal.fire({
+                title: 'Otentikasi',
+                input: 'password',
+                confirmButtonText: 'Masuk',
+                showCancelButton: true,
+                confirmButtonColor: '#1e3a8a',
+            })
+                .then((res) => {
+                    if (res.value === pass) {
+                        document.getElementById('role-selector').classList.add('hidden');
+                        document.getElementById('doc-section').classList.remove('hidden');
+                        document.getElementById('title-role').innerText = "Dashboard: " + role.toUpperCase();
+                        renderDocs(role);
+
+                        // Smooth scroll to doc section
+                        setTimeout(() => {
+                            document.getElementById('doc-section').scrollIntoView({ behavior: 'smooth' });
+                        }, 100);
+                    } else if (res.value) {
+                        Swal.fire('Error', 'Password Salah', 'error');
+                    }
+                });
+        }
+
+        function resetAuth() {
+            document.getElementById('doc-section').classList.add('hidden');
+            document.getElementById('role-selector').classList.remove('hidden');
+            document.getElementById('list-container').innerHTML = '';
         }
 
         function renderDocs(role) {
@@ -84,12 +631,14 @@ const allDocs = [
                 if (d.roles.includes(role)) {
                     html += `
                         <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                            <div class="p-4 cursor-pointer flex justify-between items-center bg-slate-50 hover:bg-slate-100" onclick="toggleAcc(${i})">
-                                <span class="font-semibold text-blue-900">${d.name}</span>
-                                <i class="fas fa-chevron-down text-slate-400"></i>
+                            <div class="p-4 cursor-pointer flex justify-between items-center bg-slate-50 hover:bg-slate-100 transition" onclick="toggleAcc(${i})">
+                                <span class="font-bold text-primary flex items-center gap-2">
+                                    <i class="fas fa-file-alt text-slate-400"></i> ${d.name}
+                                </span>
+                                <i class="fas fa-chevron-down text-slate-400 transition transform" id="icon-${i}"></i>
                             </div>
-                            <div class="accordion-content p-4" id="acc-${i}">
-                                <iframe class="w-full h-96 rounded-lg" src="${d.url}"></iframe>
+                            <div class="accordion-content p-4 bg-slate-100 border-t border-slate-200" id="acc-${i}">
+                                <iframe class="w-full h-[500px] rounded-lg shadow-inner bg-white" src="${d.url}"></iframe>
                             </div>
                         </div>`;
                 }
@@ -99,8 +648,16 @@ const allDocs = [
 
         function toggleAcc(i) {
             const el = document.getElementById('acc-' + i);
-            el.style.display = (el.style.display === 'block') ? 'none' : 'block';
+            const icon = document.getElementById('icon-' + i);
+            if (el.style.display === 'block') {
+                el.style.display = 'none';
+                icon.classList.remove('rotate-180');
+            } else {
+                el.style.display = 'block';
+                icon.classList.add('rotate-180');
+            }
         }
     </script>
 </body>
+
 </html>
