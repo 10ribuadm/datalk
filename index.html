@@ -1,1 +1,96 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Data Lembaga</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        :root { --primary: #1e3a8a; --bg: #f8fafc; }
+        body { font-family: sans-serif; background: var(--bg); margin: 0; padding: 20px; }
+        .main-box { max-width: 800px; margin: 40px auto; padding: 30px; background: white; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; }
+        .btn-role { padding: 15px 30px; margin: 10px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; color: white; transition: 0.3s; }
+        .btn-dinas { background: #1e3a8a; }
+        .btn-pengurus { background: #059669; }
+        .doc-section { display: none; text-align: left; }
+        .accordion { background: #f8fafc; border: 1px solid #e2e8f0; margin-bottom: 10px; border-radius: 8px; overflow: hidden; }
+        .accordion-header { padding: 15px 20px; cursor: pointer; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+        .accordion-header:hover { background: #edf2f7; }
+        .accordion-content { display: none; padding: 0 20px 20px 20px; }
+        .preview-box { width: 100%; height: 500px; border: 1px solid #cbd5e1; border-radius: 8px; }
+        .download-section { margin-top: 40px; padding: 30px; background: #eff6ff; border-radius: 15px; text-align: center; }
+        .btn-zip { background: #ef4444; color: white; padding: 15px 40px; border-radius: 50px; text-decoration: none; font-weight: bold; display: inline-block; }
+    </style>
+</head>
+<body>
 
+<div class="main-box" id="portal">
+    <h2 id="salam"></h2>
+    <p>Silakan pilih akses untuk melihat dokumen lembaga.</p>
+    <div id="role-selector">
+        <button class="btn-role btn-dinas" onclick="auth('dinas', 'DINAS123')">DINAS SOSIAL</button>
+        <button class="btn-role btn-pengurus" onclick="auth('pengurus', 'PENGURUS123')">PENGURUS LKSA</button>
+    </div>
+
+    <div id="doc-section" class="doc-section">
+        <h3 id="title-role" style="text-align:center;"></h3>
+        <div id="list-container"></div>
+        <div class="download-section">
+            <p>Butuh semua file dalam satu folder?</p>
+            <a href="https://drive.usercontent.google.com/uc?id=1QcQ7yth_cHIea3lAxRV4N2jbWv0ppQby&export=download" class="btn-zip">Download Semua (.zip)</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    const h = new Date().getHours();
+    document.getElementById('salam').innerText = (h < 12 ? "Selamat Pagi!" : h < 18 ? "Selamat Siang!" : "Selamat Malam!") + " Selamat Datang.";
+
+    const allDocs = [
+        {name: "1. Akta Notaris", url: "https://drive.google.com/file/d/1HJ3GczhRTW8_mFNYCLwHx4vgGHinhpkU/preview", roles: ['dinas']},
+        {name: "2. Kemenkumham", url: "https://drive.google.com/file/d/19cJvZ1CYzqTE584CF0EjqjR6H-Z75qjc/preview", roles: ['dinas']},
+        {name: "3. Ijin Operasional", url: "https://drive.google.com/file/d/1h-GvbYqv3DPgvx1oQqjTzRBIiqE75IRF/preview", roles: ['dinas', 'pengurus']},
+        {name: "4. Struktur & Visi Misi", url: "https://drive.google.com/file/d/1Mjd0flN1lYSMLctny0Tx067M9T0NvvCR/preview", roles: ['dinas', 'pengurus']},
+        {name: "5. Plang Lembaga", url: "https://drive.google.com/file/d/1IvidL0--XX00xgzW-iFfyX8La4UuvsNY/preview", roles: ['dinas', 'pengurus']},
+        {name: "6. Bangunan & Asrama", url: "https://drive.google.com/file/d/1w7UfeRjB64NJsq3rYj-8k3EcaCEfaQI5/preview", roles: ['dinas', 'pengurus']},
+        {name: "7. Sertifikat Akreditasi", url: "https://drive.google.com/file/d/1WyPk1XC1T3Mk16M63S9ZDa8C6TmRBPrH/preview", roles: ['dinas']},
+        {name: "8. KTP Ketua Lembaga", url: "https://drive.google.com/file/d/1no65nHFDCFvzrT1co9Pjyp8-2l56Qr_z/preview", roles: ['dinas']},
+        {name: "9. Data SDM/Pengurus", url: "https://drive.google.com/file/d/1eOImkdxa07bMw4tNPS84fO1ofNVdRjsc/preview", roles: ['dinas', 'pengurus']},
+        {name: "10. Foto Kegiatan", url: "https://drive.google.com/file/d/1YIl_SyXUWp2QRut1MMwyUJ6ot7x-HH2C/preview", roles: ['dinas', 'pengurus']},
+        {name: "11. Domisili Lembaga", url: "https://drive.google.com/file/d/151O57jZAm7QK14D9TIYuoUTYRs5J2wYD/preview", roles: ['dinas', 'pengurus']},
+        {name: "12. BNBA/Data Binaan", url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRjAu0LcpainhlOfHV8x_ttBoEAE_jFL7Rfv2yOBgQomTYfSi701-V1o4QyEYSwag/pubhtml?gid=1281343130&single=true&widget=true&headers=false", roles: ['dinas']}
+    ];
+
+    function auth(role, pass) {
+        Swal.fire({ title: 'Masukkan Password', input: 'password', confirmButtonText: 'Buka', showCancelButton: true })
+        .then((res) => {
+            if (res.value === pass) {
+                document.getElementById('role-selector').style.display = 'none';
+                document.getElementById('doc-section').style.display = 'block';
+                document.getElementById('title-role').innerText = "Akses: " + role.toUpperCase();
+                renderDocs(role);
+            } else if (res.value) { Swal.fire('Error', 'Password salah', 'error'); }
+        });
+    }
+
+    function renderDocs(role) {
+        let html = "";
+        allDocs.forEach((d, i) => {
+            if (d.roles.includes(role)) {
+                html += `
+                    <div class="accordion">
+                        <div class="accordion-header" onclick="toggleAcc(${i})">${d.name} <span>▼</span></div>
+                        <div class="accordion-content" id="acc-${i}"><iframe class="preview-box" src="${d.url}"></iframe></div>
+                    </div>`;
+            }
+        });
+        document.getElementById('list-container').innerHTML = html;
+    }
+
+    function toggleAcc(i) {
+        const content = document.getElementById('acc-' + i);
+        content.style.display = (content.style.display === 'block') ? 'none' : 'block';
+    }
+</script>
+</body>
+</html>
