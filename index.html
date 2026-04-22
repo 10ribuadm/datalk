@@ -51,13 +51,20 @@
     </main>
 
     <script>
-        const allDocs = [
-            {name: "1. Akta Notaris", url: "https://drive.google.com/file/d/1HJ3GczhRTW8_mFNYCLwHx4vgGHinhpkU/preview", roles: ['dinas']},
-            {name: "2. Kemenkumham", url: "https://drive.google.com/file/d/19cJvZ1CYzqTE584CF0EjqjR6H-Z75qjc/preview", roles: ['dinas']},
-            {name: "3. Ijin Operasional", url: "https://drive.google.com/file/d/1h-GvbYqv3DPgvx1oQqjTzRBIiqE75IRF/preview", roles: ['dinas', 'pengurus']},
-            {name: "4. Struktur & Visi Misi", url: "https://drive.google.com/file/d/1Mjd0flN1lYSMLctny0Tx067M9T0NvvCR/preview", roles: ['dinas', 'pengurus']},
-            {name: "12. Data Binaan (Excel)", url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRjAu0LcpainhlOfHV8x_ttBoEAE_jFL7Rfv2yOBgQomTYfSi701-V1o4QyEYSwag/pubhtml?gid=1281343130&single=true&widget=true&headers=false", roles: ['dinas']}
-        ];
+const allDocs = [
+        {name: "1. Akta Notaris", url: "https://drive.google.com/file/d/1HJ3GczhRTW8_mFNYCLwHx4vgGHinhpkU/preview", roles: ['dinas']},
+        {name: "2. Kemenkumham", url: "https://drive.google.com/file/d/19cJvZ1CYzqTE584CF0EjqjR6H-Z75qjc/preview", roles: ['dinas']},
+        {name: "3. Ijin Operasional", url: "https://drive.google.com/file/d/1h-GvbYqv3DPgvx1oQqjTzRBIiqE75IRF/preview", roles: ['dinas', 'pengurus']},
+        {name: "4. Foto Papan Struktur/Visi Misi", url: "https://drive.google.com/file/d/1Mjd0flN1lYSMLctny0Tx067M9T0NvvCR/preview", roles: ['dinas', 'pengurus']},
+        {name: "5. Foto Plang Lembaga", url: "https://drive.google.com/file/d/1IvidL0--XX00xgzW-iFfyX8La4UuvsNY/preview", roles: ['dinas', 'pengurus']},
+        {name: "6. Foto Bangunan Lembaga/Asrama", url: "https://drive.google.com/file/d/1w7UfeRjB64NJsq3rYj-8k3EcaCEfaQI5/preview", roles: ['dinas', 'pengurus']},
+        {name: "7. Sertifikat Akreditasi", url: "https://drive.google.com/file/d/1WyPk1XC1T3Mk16M63S9ZDa8C6TmRBPrH/preview", roles: ['dinas']},
+        {name: "8. Foto KTP Ketua Lembaga", url: "https://drive.google.com/file/d/1no65nHFDCFvzrT1co9Pjyp8-2l56Qr_z/preview", roles: ['dinas']},
+        {name: "9. Data SDM/Pengurus", url: "https://drive.google.com/file/d/1eOImkdxa07bMw4tNPS84fO1ofNVdRjsc/preview", roles: ['dinas', 'pengurus']},
+        {name: "10. Foto Kegiatan Binaan", url: "https://drive.google.com/file/d/1YIl_SyXUWp2QRut1MMwyUJ6ot7x-HH2C/preview", roles: ['dinas', 'pengurus']},
+        {name: "11. Domisili Lembaga", url: "https://drive.google.com/file/d/151O57jZAm7QK14D9TIYuoUTYRs5J2wYD/preview", roles: ['dinas', 'pengurus']},
+        {name: "12. BNBA/Rekap Data Binaan", url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRjAu0LcpainhlOfHV8x_ttBoEAE_jFL7Rfv2yOBgQomTYfSi701-V1o4QyEYSwag/pubhtml?gid=1281343130&single=true&widget=true&headers=false", roles: ['dinas']}
+    ];
 
         function auth(role, pass) {
             Swal.fire({ title: 'Otentikasi', input: 'password', confirmButtonText: 'Masuk', showCancelButton: true })
